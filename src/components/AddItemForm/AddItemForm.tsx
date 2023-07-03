@@ -1,29 +1,31 @@
-import React, {ChangeEvent, KeyboardEvent, useState} from 'react';
-import {IconButton, TextField} from '@mui/material';
-import {AddBox} from '@mui/icons-material';
+import React, { ChangeEvent, KeyboardEvent, useState } from "react";
+import { IconButton, TextField } from "@mui/material";
+import { AddBox } from "@mui/icons-material";
 
 type AddItemFormPropsType = {
-  addItem: (title: string) => void
-  disabled?: boolean
-}
+  addItem: (title: string) => void;
+  disabled?: boolean;
+};
 
-export const AddItemForm = React.memo(function ({addItem, disabled = false}: AddItemFormPropsType) {
-
-  const [title, setTitle] = useState('')
-  const [error, setError] = useState<string | null>(null)
+export const AddItemForm = React.memo(function ({
+  addItem,
+  disabled = false,
+}: AddItemFormPropsType) {
+  const [title, setTitle] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const addItemHandler = () => {
-    if (title.trim() !== '') {
+    if (title.trim() !== "") {
       addItem(title);
-      setTitle('');
+      setTitle("");
     } else {
-      setError('Title is required');
+      setError("Title is required");
     }
-  }
+  };
 
   const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.currentTarget.value)
-  }
+    setTitle(e.currentTarget.value);
+  };
 
   const onKeyDownHandler = (e: KeyboardEvent<HTMLInputElement>) => {
     if (error !== null) {
@@ -32,20 +34,23 @@ export const AddItemForm = React.memo(function ({addItem, disabled = false}: Add
     if (e.key === "Enter") {
       addItemHandler();
     }
-  }
+  };
 
-  return <div>
-    <TextField variant="outlined"
-               disabled={disabled}
-               error={!!error}
-               value={title}
-               onChange={onChangeHandler}
-               onKeyDown={onKeyDownHandler}
-               label="Title"
-               helperText={error}
-    />
-    <IconButton color="primary" onClick={addItemHandler} disabled={disabled}>
-      <AddBox/>
-    </IconButton>
-  </div>
-})
+  return (
+    <div>
+      <TextField
+        variant="outlined"
+        disabled={disabled}
+        error={!!error}
+        value={title}
+        onChange={onChangeHandler}
+        onKeyDown={onKeyDownHandler}
+        label="Title"
+        helperText={error}
+      />
+      <IconButton color="primary" onClick={addItemHandler} disabled={disabled}>
+        <AddBox />
+      </IconButton>
+    </div>
+  );
+});
