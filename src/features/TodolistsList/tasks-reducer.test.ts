@@ -1,5 +1,5 @@
+import { TaskPriorities, TaskStatuses } from "api/todolists-api";
 import { tasksActions, tasksReducer, TasksStateType } from "./tasks-reducer";
-import { TaskPriorities, TaskStatuses } from "../../api/todolists-api";
 import { todolistsActions } from "./todolists-reducer";
 
 let startState: TasksStateType = {};
@@ -94,8 +94,9 @@ test("correct task should be deleted from correct array", () => {
 
   expect(endState["todolistId1"].length).toBe(3);
   expect(endState["todolistId2"].length).toBe(2);
-  expect(endState["todolistId2"].every((t) => t.id != "2")).toBeTruthy();
+  expect(endState["todolistId2"].every((t) => t.id !== "2")).toBeTruthy();
 });
+
 test("correct task should be added to correct array", () => {
   //const action = addTaskAC("juce", "todolistId2");
   const action = tasksActions.addTask({
@@ -121,6 +122,7 @@ test("correct task should be added to correct array", () => {
   expect(endState["todolistId2"][0].title).toBe("juce");
   expect(endState["todolistId2"][0].status).toBe(TaskStatuses.New);
 });
+
 test("status of specified task should be changed", () => {
   const action = tasksActions.updateTask({
     taskId: "2",
@@ -133,6 +135,7 @@ test("status of specified task should be changed", () => {
   expect(endState["todolistId1"][1].status).toBe(TaskStatuses.Completed);
   expect(endState["todolistId2"][1].status).toBe(TaskStatuses.New);
 });
+
 test("title of specified task should be changed", () => {
   const action = tasksActions.updateTask({
     taskId: "2",
@@ -146,6 +149,7 @@ test("title of specified task should be changed", () => {
   expect(endState["todolistId2"][1].title).toBe("yogurt");
   expect(endState["todolistId2"][0].title).toBe("bread");
 });
+
 test("new array should be added when new todolist is added", () => {
   const action = todolistsActions.addTodolist({
     todolist: {
@@ -167,6 +171,7 @@ test("new array should be added when new todolist is added", () => {
   expect(keys.length).toBe(3);
   expect(endState[newKey]).toEqual([]);
 });
+
 test("propertry with todolistId should be deleted", () => {
   const action = todolistsActions.removeTodolist({ id: "todolistId2" });
 
@@ -194,6 +199,7 @@ test("empty arrays should be added when we set todolists", () => {
   expect(endState["1"]).toBeDefined();
   expect(endState["2"]).toBeDefined();
 });
+
 test("tasks should be added for todolist", () => {
   const action = tasksActions.setTasks({
     tasks: startState["todolistId1"],

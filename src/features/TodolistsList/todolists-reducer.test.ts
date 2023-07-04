@@ -1,11 +1,11 @@
+import { v1 } from "uuid";
+import { TodolistType } from "api/todolists-api";
 import {
   FilterValuesType,
   TodolistDomainType,
   todolistsActions,
   todolistsReducer,
 } from "./todolists-reducer";
-import { v1 } from "uuid";
-import { TodolistType } from "../../api/todolists-api";
 import { RequestStatusType } from "../../app/app-reducer";
 
 let todolistId1: string;
@@ -102,7 +102,7 @@ test("correct entity status of todolist should be changed", () => {
 
   const action = todolistsActions.changeTodolistEntityStatus({
     id: todolistId2,
-    status: newStatus,
+    entityStatus: newStatus,
   });
 
   const endState = todolistsReducer(startState, action);

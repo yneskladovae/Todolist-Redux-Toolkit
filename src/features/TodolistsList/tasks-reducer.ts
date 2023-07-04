@@ -24,16 +24,13 @@ const slice = createSlice({
       state,
       action: PayloadAction<{ taskId: string; todolistId: string }>
     ) => {
-      const index = state[action.payload.todolistId].findIndex(
-        (todo) => todo.id === action.payload.taskId
-      );
-      if (index !== -1) state[action.payload.todolistId].slice(index, 1);
+      const tasks = state[action.payload.todolistId];
+      const index = tasks.findIndex((t) => t.id === action.payload.taskId);
+      if (index !== -1) tasks.splice(index, 1);
     },
     addTask: (state, action: PayloadAction<{ task: TaskType }>) => {
-      const taskForCurrentTodolist = state[
-        action.payload.task.todoListId
-      ] as TaskType[];
-      taskForCurrentTodolist.unshift(action.payload.task);
+      const tasks = state[action.payload.task.todoListId];
+      tasks.unshift(action.payload.task);
     },
     updateTask: (
       state,
@@ -90,8 +87,7 @@ export const removeTaskTC =
   (taskId: string, todolistId: string): AppThunk =>
   (dispatch) => {
     todolistsAPI.deleteTask(todolistId, taskId).then((res) => {
-      const action = tasksActions.removeTask({ taskId, todolistId });
-      dispatch(action);
+      dispatch(tasksActions.removeTask({ taskId, todolistId }));
     });
   };
 export const addTaskTC =
