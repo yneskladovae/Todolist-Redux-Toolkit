@@ -1,14 +1,11 @@
 import React, { useCallback, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { AppRootStateType } from "../../app/store";
 import {
   addTodolistTC,
-  changeTodolistFilterAC,
   changeTodolistTitleTC,
   fetchTodolistsTC,
   FilterValuesType,
   removeTodolistTC,
-  TodolistDomainType,
+  todolistsActions,
 } from "./todolists-reducer";
 import {
   addTaskTC,
@@ -77,7 +74,10 @@ export const TodolistsList: React.FC<PropsType> = ({ demo = false }) => {
     value: FilterValuesType,
     todolistId: string
   ) {
-    const action = changeTodolistFilterAC(todolistId, value);
+    const action = todolistsActions.changeTodolistFilter({
+      id: todolistId,
+      filter: value,
+    });
     dispatch(action);
   },
   []);
