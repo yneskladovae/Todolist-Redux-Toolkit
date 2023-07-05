@@ -1,6 +1,6 @@
+import { tasksActions, tasksReducer, TasksStateType } from "features/TodolistsList/tasks.reducer";
 import { TaskPriorities, TaskStatuses } from "api/todolists-api";
-import { tasksActions, tasksReducer, TasksStateType } from "./tasks-reducer";
-import { todolistsActions } from "./todolists-reducer";
+import { todolistsActions } from "features/TodolistsList/todolists.reducer";
 
 let startState: TasksStateType = {};
 beforeEach(() => {
@@ -85,10 +85,7 @@ beforeEach(() => {
 });
 
 test("correct task should be deleted from correct array", () => {
-  const action = tasksActions.removeTask({
-    taskId: "2",
-    todolistId: "todolistId2",
-  });
+  const action = tasksActions.removeTask({ taskId: "2", todolistId: "todolistId2" });
 
   const endState = tasksReducer(startState, action);
 
@@ -137,11 +134,7 @@ test("status of specified task should be changed", () => {
 });
 
 test("title of specified task should be changed", () => {
-  const action = tasksActions.updateTask({
-    taskId: "2",
-    model: { title: "yogurt" },
-    todolistId: "todolistId2",
-  });
+  const action = tasksActions.updateTask({ taskId: "2", model: { title: "yogurt" }, todolistId: "todolistId2" });
 
   const endState = tasksReducer(startState, action);
 
@@ -201,10 +194,7 @@ test("empty arrays should be added when we set todolists", () => {
 });
 
 test("tasks should be added for todolist", () => {
-  const action = tasksActions.setTasks({
-    tasks: startState["todolistId1"],
-    todolistId: "todolistId1",
-  });
+  const action = tasksActions.setTasks({ tasks: startState["todolistId1"], todolistId: "todolistId1" });
 
   const endState = tasksReducer(
     {

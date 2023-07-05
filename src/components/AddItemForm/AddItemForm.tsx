@@ -7,12 +7,9 @@ type AddItemFormPropsType = {
   disabled?: boolean;
 };
 
-export const AddItemForm = React.memo(function ({
-  addItem,
-  disabled = false,
-}: AddItemFormPropsType) {
-  const [title, setTitle] = useState("");
-  const [error, setError] = useState<string | null>(null);
+export const AddItemForm = React.memo(function ({ addItem, disabled = false }: AddItemFormPropsType) {
+  let [title, setTitle] = useState("");
+  let [error, setError] = useState<string | null>(null);
 
   const addItemHandler = () => {
     if (title.trim() !== "") {
@@ -27,11 +24,11 @@ export const AddItemForm = React.memo(function ({
     setTitle(e.currentTarget.value);
   };
 
-  const onKeyDownHandler = (e: KeyboardEvent<HTMLInputElement>) => {
+  const onKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => {
     if (error !== null) {
       setError(null);
     }
-    if (e.key === "Enter") {
+    if (e.charCode === 13) {
       addItemHandler();
     }
   };
@@ -44,7 +41,7 @@ export const AddItemForm = React.memo(function ({
         error={!!error}
         value={title}
         onChange={onChangeHandler}
-        onKeyDown={onKeyDownHandler}
+        onKeyPress={onKeyPressHandler}
         label="Title"
         helperText={error}
       />

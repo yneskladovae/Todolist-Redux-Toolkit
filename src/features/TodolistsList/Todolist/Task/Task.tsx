@@ -1,22 +1,14 @@
 import React, { ChangeEvent, useCallback } from "react";
 import { Checkbox, IconButton } from "@mui/material";
-import { EditableSpan } from "../../../../components/EditableSpan/EditableSpan";
+import { EditableSpan } from "components/EditableSpan/EditableSpan";
 import { Delete } from "@mui/icons-material";
-import { TaskStatuses, TaskType } from "../../../../api/todolists-api";
+import { TaskStatuses, TaskType } from "api/todolists-api";
 
 type TaskPropsType = {
   task: TaskType;
   todolistId: string;
-  changeTaskStatus: (
-    id: string,
-    status: TaskStatuses,
-    todolistId: string
-  ) => void;
-  changeTaskTitle: (
-    taskId: string,
-    newTitle: string,
-    todolistId: string
-  ) => void;
+  changeTaskStatus: (id: string, status: TaskStatuses, todolistId: string) => void;
+  changeTaskTitle: (taskId: string, newTitle: string, todolistId: string) => void;
   removeTask: (taskId: string, todolistId: string) => void;
 };
 export const Task = React.memo((props: TaskPropsType) => {
@@ -27,7 +19,7 @@ export const Task = React.memo((props: TaskPropsType) => {
 
   const onChangeHandler = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      const newIsDoneValue = e.currentTarget.checked;
+      let newIsDoneValue = e.currentTarget.checked;
       props.changeTaskStatus(
         props.task.id,
         newIsDoneValue ? TaskStatuses.Completed : TaskStatuses.New,
@@ -45,15 +37,8 @@ export const Task = React.memo((props: TaskPropsType) => {
   );
 
   return (
-    <div
-      key={props.task.id}
-      className={props.task.status === TaskStatuses.Completed ? "is-done" : ""}
-    >
-      <Checkbox
-        checked={props.task.status === TaskStatuses.Completed}
-        color="primary"
-        onChange={onChangeHandler}
-      />
+    <div key={props.task.id} className={props.task.status === TaskStatuses.Completed ? "is-done" : ""}>
+      <Checkbox checked={props.task.status === TaskStatuses.Completed} color="primary" onChange={onChangeHandler} />
 
       <EditableSpan value={props.task.title} onChange={onTitleChangeHandler} />
       <IconButton onClick={onClickHandler}>

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect } from "react";
+import { useSelector } from "react-redux";
 import {
   addTodolistTC,
   changeTodolistTitleTC,
@@ -6,29 +7,26 @@ import {
   FilterValuesType,
   removeTodolistTC,
   todolistsActions,
-} from "./todolists-reducer";
-import {
-  addTaskTC,
-  removeTaskTC,
-  TasksStateType,
-  updateTaskTC,
-} from "./tasks-reducer";
-import { TaskStatuses } from "../../api/todolists-api";
+} from "features/TodolistsList/todolists.reducer";
+import { addTaskTC, removeTaskTC, updateTaskTC } from "features/TodolistsList/tasks.reducer";
+import { TaskStatuses } from "api/todolists-api";
 import { Grid, Paper } from "@mui/material";
-import { AddItemForm } from "../../components/AddItemForm/AddItemForm";
+import { AddItemForm } from "components/AddItemForm/AddItemForm";
 import { Todolist } from "./Todolist/Todolist";
 import { Navigate } from "react-router-dom";
-import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { useAppSelector } from "../../hooks/useAppSelector";
+import { useAppDispatch } from "hooks/useAppDispatch";
+import { selectIsLoggedIn } from "features/auth/auth.selectors";
+import { selectTasks } from "features/TodolistsList/tasks.selectors";
+import { selectTodolists } from "features/TodolistsList/todolists.selectors";
 
 type PropsType = {
   demo?: boolean;
 };
 
 export const TodolistsList: React.FC<PropsType> = ({ demo = false }) => {
-  const todolists = useAppSelector((state) => state.todolists);
-  const tasks = useAppSelector((state) => state.tasks);
-  const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn);
+  const todolists = useSelector(selectTodolists);
+  const tasks = useSelector(selectTasks);
+  const isLoggedIn = useSelector(selectIsLoggedIn);
 
   const dispatch = useAppDispatch();
 
@@ -50,37 +48,19 @@ export const TodolistsList: React.FC<PropsType> = ({ demo = false }) => {
     dispatch(thunk);
   }, []);
 
-  const changeStatus = useCallback(function (
-    id: string,
-    status: TaskStatuses,
-    todolistId: string
-  ) {
+  const changeStatus = useCallback(function (id: string, status: TaskStatuses, todolistId: string) {
     const thunk = updateTaskTC(id, { status }, todolistId);
     dispatch(thunk);
-  },
-  []);
+  }, []);
 
-  const changeTaskTitle = useCallback(function (
-    id: string,
-    newTitle: string,
-    todolistId: string
-  ) {
+  const changeTaskTitle = useCallback(function (id: string, newTitle: string, todolistId: string) {
     const thunk = updateTaskTC(id, { title: newTitle }, todolistId);
     dispatch(thunk);
-  },
-  []);
+  }, []);
 
-  const changeFilter = useCallback(function (
-    value: FilterValuesType,
-    todolistId: string
-  ) {
-    const action = todolistsActions.changeTodolistFilter({
-      id: todolistId,
-      filter: value,
-    });
-    dispatch(action);
-  },
-  []);
+  const changeFilter = useCallback(function (filter: FilterValuesType, id: string) {
+    dispatch(todolistsActions.changeTodolistFilter({ id, filter }));
+  }, []);
 
   const removeTodolist = useCallback(function (id: string) {
     const thunk = removeTodolistTC(id);

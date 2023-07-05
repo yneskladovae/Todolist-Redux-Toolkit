@@ -1,29 +1,18 @@
-import {
-  TaskPriorities,
-  TaskStatuses,
-  TaskType,
-  todolistsAPI,
-  UpdateTaskModelType,
-} from "../../api/todolists-api";
-import { AppRootStateType, AppThunk } from "../../app/store";
-import {
-  handleServerAppError,
-  handleServerNetworkError,
-} from "../../utils/error-utils";
-import { appActions } from "../../app/app-reducer";
+import { TaskPriorities, TaskStatuses, TaskType, todolistsAPI, UpdateTaskModelType } from "api/todolists-api";
+import { AppThunk } from "app/store";
+import { handleServerAppError, handleServerNetworkError } from "utils/error-utils";
+import { appActions } from "app/app.reducer";
+import { todolistsActions } from "features/TodolistsList/todolists.reducer";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { todolistsActions } from "./todolists-reducer";
+import { clearTasksAndTodolists } from "common/actions/common.actions";
 
 const initialState: TasksStateType = {};
 
 const slice = createSlice({
   name: "tasks",
-  initialState: {} as TasksStateType,
+  initialState,
   reducers: {
-    removeTask: (
-      state,
-      action: PayloadAction<{ taskId: string; todolistId: string }>
-    ) => {
+    removeTask: (state, action: PayloadAction<{ taskId: string; todolistId: string }>) => {
       const tasks = state[action.payload.todolistId];
       const index = tasks.findIndex((t) => t.id === action.payload.taskId);
       if (index !== -1) tasks.splice(index, 1);
@@ -46,10 +35,7 @@ const slice = createSlice({
         tasks[index] = { ...tasks[index], ...action.payload.model };
       }
     },
-    setTasks: (
-      state,
-      action: PayloadAction<{ tasks: Array<TaskType>; todolistId: string }>
-    ) => {
+    setTasks: (state, action: PayloadAction<{ tasks: Array<TaskType>; todolistId: string }>) => {
       state[action.payload.todolistId] = action.payload.tasks;
     },
   },
@@ -65,6 +51,9 @@ const slice = createSlice({
         action.payload.todolists.forEach((tl) => {
           state[tl.id] = [];
         });
+      })
+      .addCase(clearTasksAndTodolists, () => {
+        return {};
       });
   },
 });
@@ -83,13 +72,15 @@ export const fetchTasksTC =
       dispatch(appActions.setAppStatus({ status: "succeeded" }));
     });
   };
+
 export const removeTaskTC =
   (taskId: string, todolistId: string): AppThunk =>
   (dispatch) => {
-    todolistsAPI.deleteTask(todolistId, taskId).then((res) => {
+    todolistsAPI.deleteTask(todolistId, taskId).then(() => {
       dispatch(tasksActions.removeTask({ taskId, todolistId }));
     });
   };
+
 export const addTaskTC =
   (title: string, todolistId: string): AppThunk =>
   (dispatch) => {
@@ -99,8 +90,7 @@ export const addTaskTC =
       .then((res) => {
         if (res.data.resultCode === 0) {
           const task = res.data.data.item;
-          const action = tasksActions.addTask({ task });
-          dispatch(action);
+          dispatch(tasksActions.addTask({ task }));
           dispatch(appActions.setAppStatus({ status: "succeeded" }));
         } else {
           handleServerAppError(res.data, dispatch);
@@ -111,12 +101,8 @@ export const addTaskTC =
       });
   };
 export const updateTaskTC =
-  (
-    taskId: string,
-    model: UpdateDomainTaskModelType,
-    todolistId: string
-  ): AppThunk =>
-  (dispatch, getState: () => AppRootStateType) => {
+  (taskId: string, domainModel: UpdateDomainTaskModelType, todolistId: string): AppThunk =>
+  (dispatch, getState) => {
     const state = getState();
     const task = state.tasks[todolistId].find((t) => t.id === taskId);
     if (!task) {
@@ -132,15 +118,14 @@ export const updateTaskTC =
       startDate: task.startDate,
       title: task.title,
       status: task.status,
-      ...model,
+      ...domainModel,
     };
 
     todolistsAPI
       .updateTask(todolistId, taskId, apiModel)
       .then((res) => {
         if (res.data.resultCode === 0) {
-          const action = tasksActions.updateTask({ taskId, model, todolistId });
-          dispatch(action);
+          dispatch(tasksActions.updateTask({ taskId, model: domainModel, todolistId }));
         } else {
           handleServerAppError(res.data, dispatch);
         }
@@ -159,7 +144,6 @@ export type UpdateDomainTaskModelType = {
   startDate?: string;
   deadline?: string;
 };
-
 export type TasksStateType = {
   [key: string]: Array<TaskType>;
 };
